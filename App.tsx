@@ -7,7 +7,6 @@
 
 import React from 'react';
 import { SafeAreaView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { NewAppScreen } from '@react-native/new-app-screen';
 import SmsForm from './src/components/SmsForm';
 
 const App = () => {
@@ -18,7 +17,6 @@ const App = () => {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Text style={styles.title}>SMSBank</Text>
       <View style={styles.container}>
-        <NewAppScreen templateFileName="App.tsx" />
         <SmsForm />
       </View>
     </SafeAreaView>
