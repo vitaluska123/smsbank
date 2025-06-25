@@ -26,13 +26,14 @@ jobs:
           cd ios
           pod install
 
-      - name: Build iOS app
+      - name: Build iOS Release .ipa
         run: |
           cd ios
-          xcodebuild -workspace app.xcworkspace -scheme app -configuration Debug -sdk iphonesimulator -derivedDataPath build
+          xcodebuild -workspace app.xcworkspace -scheme app -configuration Release -sdk iphoneos -archivePath build/app.xcarchive archive
+          xcodebuild -exportArchive -archivePath build/app.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/export
 
-      - name: Upload .app artifact
+      - name: Upload .ipa artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-ios-build
-          path: ios/build/Build/Products/Debug-iphonesimulator/app.app
+          name: app-ios-release.ipa
+          path: ios/build/export/*.ipa
