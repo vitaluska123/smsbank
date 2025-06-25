@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# React Native
+android/app/build/
+ios/Pods/
+build/
+
+# Expo
+.expo/
+.expo-shared/
+
+# OS
+.DS_Store
+Thumbs.db
