@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert, Platform, Linking } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
 import banks from '../templates/banks.json';
 
 // Форма для перевода денег через SMS с выбором банка и метода
 const SmsForm = () => {
-  const [selectedBank, setSelectedBank] = useState(banks[0]);
-  const [selectedMethod, setSelectedMethod] = useState(banks[0].methods[0]);
+  // Состояния для DropDownPicker
+  const [bankOpen, setBankOpen] = useState(false);
+  const [methodOpen, setMethodOpen] = useState(false);
+  const [bankValue, setBankValue] = useState(banks[0].name);
+  const [methodValue, setMethodValue] = useState(banks[0].methods[0].name);
+
+  // Состояния для полей
   const [phone, setPhone] = useState('');
   const [card, setCard] = useState('');
   const [amount, setAmount] = useState('');
 
+  // Получаем выбранный банк и метод
+  const selectedBank = banks.find(b => b.name === bankValue) || banks[0];
+  const selectedMethod = selectedBank.methods.find(m => m.name === methodValue) || selectedBank.methods[0];
+
   // Обновлять выбранный метод при смене банка
   useEffect(() => {
-    setSelectedMethod(selectedBank.methods[0]);
-  }, [selectedBank]);
+    setMethodValue(selectedBank.methods[0].name);
+  }, [bankValue]);
 
   // Формируем текст SMS по шаблону
   const getSmsText = () => {
@@ -57,27 +66,29 @@ const SmsForm = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Банк:</Text>
-      <Picker
-        selectedValue={selectedBank.name}
-        onValueChange={name => {
-          const bank = banks.find(b => b.name === name);
-          if (bank) setSelectedBank(bank);
-        }}>
-        {banks.map(bank => (
-          <Picker.Item key={bank.name} label={bank.name} value={bank.name} />
-        ))}
-      </Picker>
+      <DropDownPicker
+        open={bankOpen}
+        value={bankValue}
+        items={banks.map(b => ({ label: b.name, value: b.name }))}
+        setOpen={setBankOpen}
+        setValue={setBankValue}
+        setItems={() => {}}
+        zIndex={3000}
+        zIndexInverse={1000}
+        style={styles.dropdown}
+      />
       <Text style={styles.label}>Способ перевода:</Text>
-      <Picker
-        selectedValue={selectedMethod.name}
-        onValueChange={name => {
-          const method = selectedBank.methods.find(m => m.name === name);
-          if (method) setSelectedMethod(method);
-        }}>
-        {selectedBank.methods.map(method => (
-          <Picker.Item key={method.name} label={method.name} value={method.name} />
-        ))}
-      </Picker>
+      <DropDownPicker
+        open={methodOpen}
+        value={methodValue}
+        items={selectedBank.methods.map(m => ({ label: m.name, value: m.name }))}
+        setOpen={setMethodOpen}
+        setValue={setMethodValue}
+        setItems={() => {}}
+        zIndex={2000}
+        zIndexInverse={2000}
+        style={styles.dropdown}
+      />
       {selectedMethod.value.includes('<number>') && (
         <>
           <Text style={styles.label}>Номер получателя (9ХХ...):</Text>
@@ -135,6 +146,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 12,
+  },
+  dropdown: {
+    marginBottom: 12,
+    zIndex: 1000,
   },
 });
 
